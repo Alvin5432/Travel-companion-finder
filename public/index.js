@@ -14,6 +14,7 @@ signInButton.addEventListener('click', () => {
 
 
 signUp.addEventListener('click', () => {
+  console.log('the signup button was clicked');
   let password = document.querySelector('.password');
   let email = document.querySelector('.email');
   console.log(email.value);

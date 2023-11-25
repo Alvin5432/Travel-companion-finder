@@ -1,0 +1,17 @@
+/* Your CSS styles go here */
+
+#locationInput {
+    width: 300px;
+    padding: 10px;
+}
+
+.suggestion {
+    cursor: pointer;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+}
+
+.suggestion:hover {
+    background-color: #f0f0f0;
+}
