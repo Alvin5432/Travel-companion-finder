@@ -42,9 +42,9 @@ app.use(session({
   cookie: { secure: false } // Note: In production, set secure to true to ensure the cookie is only sent over HTTPS
 }));
 
-// ...existing code...
 
-app.get('/login', function (req, res) {
+
+app.post('/login', function (req, res) {
   var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -70,7 +70,7 @@ app.get('/login', function (req, res) {
   });
 });
 
-app.get('/users', function(req, res) {
+app.post('/users', function(req, res) {
   var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -87,4 +87,39 @@ app.get('/users', function(req, res) {
       res.send(result);
     });
   });
+});
+
+app.post('/insert', function (req, res) {
+
+  req.session.email = req.query.email;
+  req.session.interests = [];
+
+  var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
+  });
+
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    var sql = `INSERT INTO userdetails (email, password) VALUES ('${req.body.email}', '${req.body.password}')`;
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("User inserted!");
+      res.redirect('/interests');
+      res.status(200).send('User inserted successfully!');
+    });
+  });g
+
+});
+
+app.get('/interests', function(req, res) {
+  // Retrieve session data
+  var email = req.session.email;
+  var interests = req.session.interests;
+
+  // Render interests page with session data
+  res.render('interests', { email: email, interests: interests });
 });

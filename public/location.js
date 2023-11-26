@@ -1,4 +1,4 @@
-const apiKey = 'pk.75e5af0e3d7c0fe7c16a921f85e44c7a'; // Replace with your LocationIQ API key
+const apiKey = 'pk.75e5af0e3d7c0fe7c16a921f85e44c7a'; 
 const locationInput = document.getElementById('locationInput');
 const suggestionsDiv = document.getElementById('suggestions');
 
