@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+// const bodyParser = require('body-parser');
 const path = require('path');
 const mysql = require('mysql');
 const PORT = process.env.PORT || 5000
@@ -7,6 +8,7 @@ const app = express();
 const server = app.listen(PORT, () => console.log(`💬 server on port ${PORT}`))
 
 app.use(express.json());
+// app.use(bodyParser.json());
 
 
 const io = require('socket.io')(server)
@@ -39,9 +41,9 @@ function onConnected(socket) {
 }
 app.use(session({
   secret: 'your secret key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // Note: In production, set secure to true to ensure the cookie is only sent over HTTPS
+  resave: true,
+  saveUninitialized: false,
+ 
 }));
 
 
@@ -99,6 +101,8 @@ app.get('/insert', function (req, res) {
     database: "chat-socket"
   });
 
+  req.session.email = req.query.email;
+
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
@@ -121,11 +125,94 @@ app.get('/insert', function (req, res) {
 });
 
 
-// app.get('/interests', function(req, res) {
-//   // Retrieve session data
-//   var email = req.session.email;
-//   var interests = req.session.interests;
+app.get('/storeInterest', function (req, res) {
+  const userInterest = req.query.interest;
+  const userEmail = req.session.email;
 
-//   // Render interests page with session data
-//   res.render('interests', { email: email, interests: interests });
-// });
+  console.log('Received interest:', userInterest);
+    console.log('Received email:', userEmail);
+
+
+ 
+  var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
+  });
+
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    var sql = `UPDATE userdetails SET interest = '${userInterest}' WHERE email = '${userEmail}'`;
+    
+    con.query(sql, function (err, result) {
+      if (err) throw err;
+      console.log("Interest stored!");
+      res.status(200).send('Interest stored successfully!');
+    });
+  });
+});
+
+
+app.get('/saveDestination', function (req, res) {
+  const chosenDestination = req.query.destination;
+  const userEmail = req.session.user;
+
+  var con = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "",
+      database: "chat-socket"
+  });
+
+  con.connect(function (err) {
+      if (err) throw err;
+      console.log("Connected!");
+      console.log(userEmail);
+
+      var sql = `
+          INSERT INTO user_destinations (email, chosen_destination)
+          VALUES (?, ?)
+          ON DUPLICATE KEY UPDATE chosen_destination = VALUES(chosen_destination)
+      `;
+
+      con.query(sql, [userEmail, chosenDestination], function (err, result) {
+          if (err) throw err;
+          res.status(200).send('Destination saved successfully!');
+      });
+  });
+});
+
+// Add an API endpoint to find companions with the same interests and chosen destination
+app.get('/searchCompanions', function (req, res) {
+  const userEmail = req.session.user;
+
+  var con = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "",
+      database: "chat-socket"
+  });
+
+  con.connect(function (err) {
+      if (err) throw err;
+      console.log("Connected!");
+
+      // Retrieve users with the same interests and chosen destination
+      var sql = `
+      SELECT u.email, u.interest, d.chosen_destination
+      FROM userdetails u
+      JOIN user_destinations d ON u.email = d.email
+      WHERE u.interest = (SELECT interest FROM userdetails WHERE email = ?)
+      AND d.chosen_destination = (SELECT chosen_destination FROM user_destinations WHERE email = ?)
+      AND u.email != ?
+      `;
+
+      con.query(sql, [userEmail, userEmail, userEmail], function (err, result) {
+          if (err) throw err;
+          res.send(result);
+      });
+  });
+});

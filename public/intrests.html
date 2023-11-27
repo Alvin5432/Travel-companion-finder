@@ -34,6 +34,54 @@
         <button id="next-button">Next</button>
         
     </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const options = document.querySelectorAll('.option-div');
+    const nextButton = document.getElementById('next-button');
+
+    let selectedOption = null;
+
+    options.forEach(option => {
+        option.addEventListener('click', () => {
+            // Mark the selected option
+            options.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            selectedOption = option.textContent.trim();
+            console.log(selectedOption);
+        });
+    });
+    
+    nextButton.addEventListener('click', () => {
+        if (selectedOption) {
+            // Retrieve the user's email from localStorage
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (!userEmail) {
+                alert('User email not found.');
+                return;
+            }
+            
+            // Send the selected option to the server as query parameters
+            fetch(`http://localhost:5000/storeInterest?email=${userEmail}&interest=${selectedOption}`)
+            .then(response => response.text())
+            .then(data => {
+                    console.log(userEmail);
+                    console.log(selectedOption);
+                    console.log(data);
+                    // You can handle the server response here
+                    // For example, redirect to a new page
+                    window.location.href = "/success.html";
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        } else {
+            alert('Please select an option before proceeding.');
+        }
+    });
+});
+
+    </script>
    
 </body>
 </html>

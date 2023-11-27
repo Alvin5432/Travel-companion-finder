@@ -4,6 +4,8 @@ const container = document.getElementById('container');
 const signUp = document.querySelector('.sup');
 const signIn = document.querySelector('.sin')
 
+
+
 signUpButton.addEventListener('click', () => {
   container.classList.add("right-panel-active");
 });
@@ -20,10 +22,12 @@ signUp.addEventListener('click', () => {
   console.log(email.value);
   console.log(password.value);
   fetch(`http://localhost:5000/insert?email=${email.value}&password=${password.value}`)
-    .then(response => response.text())
-    .then(data => {
-      if(data === 'User inserted successfully!'){
-        window.location.href = "/intrests.html";
+  .then(response => response.text())
+  .then(data => {
+    if(data === 'User inserted successfully!'){
+      window.location.href = "/intrests.html";
+      sessionStorage.setItem('userEmail', emailInput.value);
+      console.log('User Email in sessionStorage:', sessionStorage.getItem('userEmail'));
       } else {
         console.log('User already exists!');
        
@@ -62,7 +66,6 @@ signIn.addEventListener('click', () => {
         console.log('Login successful!');
         window.location.href = '/index.html';
         alert('we will get you looged in soon');
-        // Store the user's email in localStorage
         localStorage.setItem('userEmail', email);
       } else {
         console.log('Login failed!');
