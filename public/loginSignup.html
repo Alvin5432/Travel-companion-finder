@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="intrests.css">
     <link rel="stylesheet" href="index.css">
     <title>Document</title>
 </head>
@@ -12,7 +11,7 @@
     <h2> Your next adventure starts here</h2>
 <div class="container" id="container">
   <div class="form-container sign-up-container">
-    <form  id="signup-form">
+    <form >
       <h1>Create Account</h1>
       <div class="social-container">
         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -20,10 +19,10 @@
         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
       </div>
       <span>or use your email for registration</span>
-      <input type="text" name="name" placeholder="Name" />
-      <input type="email" name="email" placeholder="Email" class="email" />
-      <input type="password" name="password" placeholder="Password" class="password" />
-      <button id="next-button">Next</button>
+      <input type="text" placeholder="Name" />
+      <input type="email" placeholder="Email" class="email" />
+      <input type="password" placeholder="Password" class="password" />
+      <button class="sup">Sign Up</button>
 
     </form>
   </div>
@@ -67,28 +66,5 @@
   </p>
 </footer>
 <script src="index.js"></script>
-<script>
-  let nxtButton = document.querySelector('#next-button');
-nxtButton.addEventListener('click', function() {
-  var formData = new FormData(document.querySelector('#signup-form'));
-
-  fetch('/insert', {
-    method: 'POST',
-    body: formData,
-    credentials: 'include'
-  })
-  .then(response => {
-    if (response.ok) {
-      window.location.href = '/interests';
-    } else {
-      console.error('Error:', response.statusText);
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
-});
-
-</script>
 </body>
 </html>

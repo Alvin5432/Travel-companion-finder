@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 5000
 const app = express();
 const server = app.listen(PORT, () => console.log(`💬 server on port ${PORT}`))
 
+app.use(express.json());
+
 
 const io = require('socket.io')(server)
 
@@ -44,7 +46,7 @@ app.use(session({
 
 
 
-app.post('/login', function (req, res) {
+app.get('/login', function (req, res) {
   var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -60,7 +62,7 @@ app.post('/login', function (req, res) {
       if (err) throw err;
       if (result.length > 0) {
         console.log("User found!");
-        req.session.user = req.query.email; // Set the user in the session
+        req.session.user = req.query.email; 
         res.status(200).send('User found!');
       } else {
         console.log("User not found!");
@@ -70,7 +72,7 @@ app.post('/login', function (req, res) {
   });
 });
 
-app.post('/users', function(req, res) {
+app.get('/users', function(req, res) {
   var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -89,11 +91,7 @@ app.post('/users', function(req, res) {
   });
 });
 
-app.post('/insert', function (req, res) {
-
-  req.session.email = req.query.email;
-  req.session.interests = [];
-
+app.get('/insert', function (req, res) {
   var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -104,22 +102,30 @@ app.post('/insert', function (req, res) {
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    var sql = `INSERT INTO userdetails (email, password) VALUES ('${req.body.email}', '${req.body.password}')`;
+    
+    var sql = `INSERT INTO userdetails (email, password) VALUES ('${req.query.email}', '${req.query.password}')`;
+    
     con.query(sql, function (err, result) {
       if (err) throw err;
-      console.log("User inserted!");
-      res.redirect('/interests');
-      res.status(200).send('User inserted successfully!');
+
+      // Check if the user was inserted successfully
+      if (result && result.affectedRows > 0) {
+        console.log("User inserted!");
+        res.status(200).send('User inserted successfully!');
+      } else {
+        console.log("User already exists!");
+        res.status(200).send('User already exists!');
+      }
     });
-  });g
-
+  });
 });
 
-app.get('/interests', function(req, res) {
-  // Retrieve session data
-  var email = req.session.email;
-  var interests = req.session.interests;
 
-  // Render interests page with session data
-  res.render('interests', { email: email, interests: interests });
-});
+// app.get('/interests', function(req, res) {
+//   // Retrieve session data
+//   var email = req.session.email;
+//   var interests = req.session.interests;
+
+//   // Render interests page with session data
+//   res.render('interests', { email: email, interests: interests });
+// });

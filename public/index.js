@@ -21,11 +21,19 @@ signUp.addEventListener('click', () => {
   console.log(password.value);
   fetch(`http://localhost:5000/insert?email=${email.value}&password=${password.value}`)
     .then(response => response.text())
-    .then(data => console.log(data))
+    .then(data => {
+      if(data === 'User inserted successfully!'){
+        window.location.href = "/intrests.html";
+      } else {
+        console.log('User already exists!');
+       
+      }
+    })
     .catch((error) => {
       console.error('Error:', error);
     });
 });
+
 
 signIn.addEventListener('click', () => {
   let emailField = document.querySelector('.signIn-email');
@@ -52,7 +60,7 @@ signIn.addEventListener('click', () => {
     .then(data => {
       if (data === 'User found!') {
         console.log('Login successful!');
-        window.location.href = '/chat.html';
+        window.location.href = '/index.html';
         alert('we will get you looged in soon');
         // Store the user's email in localStorage
         localStorage.setItem('userEmail', email);
