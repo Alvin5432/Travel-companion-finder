@@ -186,7 +186,6 @@ app.get('/saveDestination', function (req, res) {
 });
 
 
-// Add an API endpoint to find companions with the same interests and chosen destination
 app.get('/searchCompanions', function (req, res) {
   const userEmail = req.session.user;
 
@@ -225,6 +224,80 @@ app.get('/logout', (req, res) => {
           res.status(500).send('Internal Server Error');
       } else {
           res.redirect('/loginSignUp.html');
+      }
+  });
+});
+
+//admin functions
+const con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "chat-socket"
+});
+
+con.connect((err) => {
+  if (err) throw err;
+  console.log("Connected to MySQL database");
+});
+
+app.get('/admin/users', (req, res) => {
+  const query = 'SELECT * FROM userdetails';
+
+  con.query(query, (error, results) => {
+    if (error) {
+      console.error('Error executing MySQL query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      res.status(200).json(results);
+    }
+  });
+});
+
+
+app.get('/admin/remove-user/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  const deleteQuery = 'DELETE FROM userdetails WHERE id = ?';
+
+  con.query(deleteQuery, [userId], (deleteError, deleteResults) => {
+    if (deleteError) {
+      console.error('Error executing MySQL delete query:', deleteError);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      if (deleteResults.affectedRows > 0) {
+        res.status(200).json({ message: 'User removed successfully' });
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    }
+  });
+});
+
+app.get('/admin/destination-stats', (req, res) => {
+  const mostVisitedQuery = 'SELECT chosen_destination, COUNT(chosen_destination) AS count FROM userdetails GROUP BY chosen_destination ORDER BY count DESC LIMIT 1';
+  const leastVisitedQuery = 'SELECT chosen_destination, COUNT(chosen_destination) AS count FROM userdetails GROUP BY chosen_destination ORDER BY count ASC LIMIT 1';
+
+  con.query(mostVisitedQuery, (mostVisitedError, mostVisitedResults) => {
+      if (mostVisitedError) {
+          console.error('Error executing MySQL query:', mostVisitedError);
+          res.status(500).json({ error: 'Internal Server Error' });
+      } else {
+          const mostVisitedDestination = mostVisitedResults[0] ? mostVisitedResults[0].chosen_destination : 'No data';
+
+          con.query(leastVisitedQuery, (leastVisitedError, leastVisitedResults) => {
+              if (leastVisitedError) {
+                  console.error('Error executing MySQL query:', leastVisitedError);
+                  res.status(500).json({ error: 'Internal Server Error' });
+              } else {
+                  const leastVisitedDestination = leastVisitedResults[0] ? leastVisitedResults[0].chosen_destination : 'No data';
+
+                  res.status(200).json({
+                      mostVisited: mostVisitedDestination,
+                      leastVisited: leastVisitedDestination,
+                  });
+              }
+          });
       }
   });
 });

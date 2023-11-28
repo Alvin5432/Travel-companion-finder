@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #sidebar {
+            width: 250px;
+            min-width: 80px;
+            /* Set a minimum width for partial collapse */
+            height: 100%;
+            position: fixed;
+            background-color: #333;
+            padding-top: 20px;
+            color: white;
+            transition: width 0.5s;
+        }
+
+        #content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.5s;
+        }
+
+        #content.expanded {
+            margin-left: 80px;
+            /* Adjust as needed */
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        #user-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .user-item {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <button onclick="toggleSidebar()">Toggle Sidebar</button>
+        <div id="admin-functions">
+            <h2>Admin Functions</h2>
+            <button onclick="resetPassword()">Reset User Password</button>
+            <button onclick="loadUserList()">Load User List</button>
+            <button onclick="toggleDestinationStats()">Toggle Destination Stats</button>
+            <!-- Add more admin functions as needed -->
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+        <h1>Welcome to the Admin Panel</h1>
+        <!-- Content goes here -->
+        <div id="destination-stats">
+            <h2>Destination Statistics</h2>
+            <div id="most-visited">
+                <h3>Most Visited Destination</h3>
+                <p id="most-visited-destination"></p>
+            </div>
+            <div id="least-visited">
+                <h3>Least Visited Destination</h3>
+                <p id="least-visited-destination"></p>
+            </div>
+        </div>
+        <ul id="user-list"></ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // Add your client-side JavaScript code here
+        let sidebarCollapsed = false;
+        let destinationStatsVisible = false;
+
+        function toggleSidebar() {
+            const sidebar = $("#sidebar");
+            const content = $("#content");
+
+            if (sidebarCollapsed) {
+                sidebar.css("width", "250px");
+                content.removeClass("expanded");
+            } else {
+                sidebar.css("width", "80px"); // Adjust as needed
+                content.addClass("expanded");
+            }
+
+            sidebarCollapsed = !sidebarCollapsed;
+
+            // Hide destination stats when toggling sidebar
+            if (destinationStatsVisible) {
+                toggleDestinationStats();
+            }
+        }
+
+        function loadUserList() {
+            // Clear existing user list
+            $("#user-list").empty();
+
+            // Fetch user list from the server
+            $.ajax({
+                type: "GET",
+                url: "/admin/users",
+                success: function (users) {
+                    // Display the user list
+                    users.forEach((user) => {
+                        $("#user-list").append(`
+          <li class="user-item">
+            <strong>ID:</strong> ${user.id} |
+            <strong>Email:</strong> ${user.email} |
+            <strong>Interests:</strong> ${user.interest} |
+            <button onclick="removeUser(${user.id})">Remove</button>
+          </li>
+        `);
+                    });
+
+                    // Hide destination stats when loading user list
+                    if (destinationStatsVisible) {
+                        toggleDestinationStats();
+                    }
+                },
+                error: function (error) {
+                    alert("Error loading user list");
+                },
+            });
+        }
+
+        function toggleDestinationStats() {
+            const destinationStats = $("#destination-stats");
+
+            if (destinationStatsVisible) {
+                destinationStats.hide();
+            } else {
+                destinationStats.show();
+            }
+
+            destinationStatsVisible = !destinationStatsVisible;
+        }
+
+        function removeUser(userId) {
+            // Send a request to the server to remove the user
+            $.ajax({
+                type: "GET",
+                url: `/admin/remove-user/${userId}`,
+                success: function (response) {
+                    alert(response.message);
+                    // Reload the user list after removing a user
+                    loadUserList();
+                },
+                error: function (error) {
+                    alert(error.responseJSON.error);
+                },
+            });
+        }
+
+        function loadDestinationStats() {
+            $.ajax({
+                type: "GET",
+                url: "/admin/destination-stats",
+                success: function (stats) {
+                    $("#most-visited-destination").text(stats.mostVisited);
+                    $("#least-visited-destination").text(stats.leastVisited);
+                },
+                error: function (error) {
+                    alert("Error loading destination stats");
+                },
+            });
+        }
+
+        // Call this function to load destination statistics when the page loads
+        loadDestinationStats();
+    </script>
+</body>
+
+</html>
