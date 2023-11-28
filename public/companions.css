@@ -1,0 +1,67 @@
+/* companions.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+}
+
+.container {
+    text-align: center;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+#companions-list {
+    text-align: center; /* Align text within the list to the left */
+}
+
+.list-item {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.list-item p {
+    margin: 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.list-item button {
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.list-item button:hover {
+    background-color: #45a049;
+}
+
+/* Additional styling for the chat button */
+.list-item button.chat-button {
+    background-color: #3498db;
+}
+
+.list-item button.chat-button:hover {
+    background-color: #2980b9;
+}

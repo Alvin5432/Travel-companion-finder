@@ -1,45 +1,45 @@
-@media screen and (max-width: 1485px){
-    .discover{
-        width: 65%;
+    @media screen and (max-width: 1485px){
+        .discover{
+            width: 65%;
+        }
     }
-}
 
 
-@media screen and (max-width: 1373px){
-    .discover{
-        width: 75%;
+    @media screen and (max-width: 1373px){
+        .discover{
+            width: 75%;
+        }
     }
-}
 
-@media screen and (max-width: 1250px){
-    .discover{
-        width: 72%;
+    @media screen and (max-width: 1250px){
+        .discover{
+            width: 72%;
+        }
     }
-}
 
-@media screen and (max-width: 1250px){
-    header{
-        width: 90%;
+    @media screen and (max-width: 1250px){
+        header{
+            width: 90%;
+        }
+        .discover{
+            width: 82%;
+        }
+        .destination{
+            width: 55%;
+        }
     }
-    .discover{
-        width: 82%;
-    }
-    .destination{
-        width: 55%;
-    }
-}
 
-@media screen and (max-width: 1100px){
-    header{
-        width: 95%;
+    @media screen and (max-width: 1100px){
+        header{
+            width: 95%;
+        }
+        .discover{
+            width: 95%;
+        }
+        .destination{
+            width: 60%;
+        }
     }
-    .discover{
-        width: 95%;
-    }
-    .destination{
-        width: 60%;
-    }
-}
 
 
 

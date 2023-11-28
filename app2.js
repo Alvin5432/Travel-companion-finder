@@ -20,18 +20,6 @@ let socketsConected = new Set()
 io.on('connection', onConnected)
 
 function onConnected(socket) {
-
-  socket.on('privateMessage', (data) => {
-    const { receiverEmail, message } = data;
-    const senderEmail = req.session.user; // Assuming you have the user's email in the session
-
-    // Store the message in the database
-    storeMessage(senderEmail, receiverEmail, message);
-    
-    // Send the message to the receiver's room
-    io.to(receiverEmail).emit('message', { senderEmail, message });
-  });
-
   console.log('Socket connected', socket.id)
   socketsConected.add(socket.id)
   io.emit('clients-total', socketsConected.size)
@@ -50,17 +38,6 @@ function onConnected(socket) {
   socket.on('feedback', (data) => {
     socket.broadcast.emit('feedback', data)
   })
-  function storeMessage(senderEmail, receiverEmail, message) {
-    var sql = `
-      INSERT INTO messages (sender_email, receiver_email, message)
-      VALUES (?, ?, ?)
-    `;
-    
-    con.query(sql, [senderEmail, receiverEmail, message], function (err, result) {
-      if (err) throw err;
-      console.log("Message stored!");
-    });
-}
 }
 app.use(session({
   secret: 'your secret key',
@@ -240,20 +217,17 @@ app.get('/searchCompanions', function (req, res) {
   });
 });
 
-app.get('/getMessages', function (req, res) {
-  const userEmail = req.session.user;
-
-  var sql = `
-    SELECT sender_email, receiver_email, message, sent_at
-    FROM messages
-    WHERE receiver_email = ?
-    ORDER BY sent_at;
-  `;
-
-  con.query(sql, [userEmail], function (err, result) {
-    if (err) throw err;
-    res.send(result);
+app.get('/logout', (req, res) => {
+  // Destroy the session and redirect to the login page
+  req.session.destroy(err => {
+      if (err) {
+          console.error('Error destroying session:', err);
+          res.status(500).send('Internal Server Error');
+      } else {
+          res.redirect('/loginSignUp.html');
+      }
   });
 });
+
 
 

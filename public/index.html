@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="media.css">
     <title>Travel Companion Finder Website</title>
 </head>
+
 <body>
     <header>
         <nav>
@@ -15,12 +17,17 @@
             <ul>
                 <li><a href="companions.html">Discover</a></li>
                 <li><a href="location.html">Destinations</a></li>
-                <li><a href="loginSignup.html">Log In</a></li>
-                <li><a href="loginSignup.html">Sign Up</a></li>
+
 
 
             </ul>
             <i class="bi bi-three-dots"></i>
+
+
+            <!-- ... (existing content) ... -->
+            <p id="error-message"></p>
+            <button id="logout-link">logout</button>
+
         </nav>
         <div class="content">
             <div class="cont_bx">
@@ -37,44 +44,54 @@
                     </div>
                     <div class="card">
                         <h4>Date <i class="bi bi-caret-down-fill"></i></h4>
-                        <input type="date" >
+                        <input type="date">
                     </div>
                     <div class="card">
-                        <h4>People  <i class="bi bi-caret-down-fill"></i>  </h4>
+                        <h4>People <i class="bi bi-caret-down-fill"></i> </h4>
                         <input type="number" placeholder="How many people?">
                     </div>
-                        <input type="button" value="Explore Now">
+                    <input type="button" value="Explore Now">
                 </div>
                 <div class="travel_bx">
                     <h4>Countries to travel</h4>
                     <div class="cards">
                         <div class="card">
-                            <h3>SWITZERLAND <img src="https://bestflag.com/cdn/shop/products/STOCK-FLAG---FT---3x5-Switzerland_800x.png?v=1618242854" alt="" ></h3>
-                            <img src="https://www.thoughtco.com/thmb/6_FTZE_9-T1B-G6bxVkjokxTJnQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-572970507-5b76f58ec9e77c0025535cd4.jpg" alt="">
+                            <h3>SWITZERLAND <img
+                                    src="https://bestflag.com/cdn/shop/products/STOCK-FLAG---FT---3x5-Switzerland_800x.png?v=1618242854"
+                                    alt=""></h3>
+                            <img src="https://www.thoughtco.com/thmb/6_FTZE_9-T1B-G6bxVkjokxTJnQ=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-572970507-5b76f58ec9e77c0025535cd4.jpg"
+                                alt="">
                             <div class="btn_sites">
                                 <a href="">Read Now</a>
                                 <h5>Switzerland Alps <br><span>$760</span></h5>
                             </div>
                         </div>
                         <div class="card">
-                            <h3>ITALY <img src="https://cdn11.bigcommerce.com/s-w6fxwapwzi/images/stencil/1280x1280/products/2537/5351/2x3-italy-flag-image__24762.1582735728.jpg?c=1" alt="" ></h3>
-                            <img src="https://lp-cms-production.imgix.net/2020-09/LPT_Extras_087.jpg?auto=format&w=730&h=630&fit=crop&q=75" alt="">
+                            <h3>ITALY <img
+                                    src="https://cdn11.bigcommerce.com/s-w6fxwapwzi/images/stencil/1280x1280/products/2537/5351/2x3-italy-flag-image__24762.1582735728.jpg?c=1"
+                                    alt=""></h3>
+                            <img src="https://lp-cms-production.imgix.net/2020-09/LPT_Extras_087.jpg?auto=format&w=730&h=630&fit=crop&q=75"
+                                alt="">
                             <div class="btn_sites">
                                 <a href="">Read Now</a>
                                 <h5>The Italian Riviera <br><span>$950</span></h5>
                             </div>
                         </div>
                         <div class="card">
-                            <h3>GREECE <img src="https://cdn.britannica.com/49/1049-004-AE4BAD3E/Flag-Greece.jpg" alt="" ></h3>
-                            <img src="https://www.contiki.com/six-two/images/width=1150,height=710,crop=1/2023/01/dragos-gontariu-MNHB_nZjiA-unsplash-e1599476414233.jpg" alt="">
+                            <h3>GREECE <img src="https://cdn.britannica.com/49/1049-004-AE4BAD3E/Flag-Greece.jpg"
+                                    alt=""></h3>
+                            <img src="https://www.contiki.com/six-two/images/width=1150,height=710,crop=1/2023/01/dragos-gontariu-MNHB_nZjiA-unsplash-e1599476414233.jpg"
+                                alt="">
                             <div class="btn_sites">
                                 <a href="">Read Now</a>
                                 <h5>Miraculous Beaches<br><span>$1250</span></h5>
                             </div>
                         </div>
                         <div class="card">
-                            <h3>SPAIN <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg" alt="" ></h3>
-                            <img src="https://images.contentstack.io/v3/assets/blt3de4d56151f717f2/blte6d02aaf3242da85/633405bb4df1082a16b60361/1Spain_Madrid_City_GettyImages-1059076792.jpg?crop=1050,550&auto=webp" alt="">
+                            <h3>SPAIN <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/Flag_of_Spain.svg"
+                                    alt=""></h3>
+                            <img src="https://images.contentstack.io/v3/assets/blt3de4d56151f717f2/blte6d02aaf3242da85/633405bb4df1082a16b60361/1Spain_Madrid_City_GettyImages-1059076792.jpg?crop=1050,550&auto=webp"
+                                alt="">
                             <div class="btn_sites">
                                 <a href="">Read Now</a>
                                 <h5>Cities Of Spain<br><span>$1050</span></h5>
@@ -84,7 +101,7 @@
                 </div>
             </div>
         </div>
-       
+
     </header>
     <div class="discover">
         <h1>Best tour reviews for you</h1>
@@ -113,7 +130,8 @@
             <div class="card">
                 <h3>Santorini,Greece</h3>
                 <div class="img_text">
-                    <img src="https://a.travel-assets.com/findyours-php/viewfinder/images/res70/507000/507142-greece.jpg" alt="">
+                    <img src="https://a.travel-assets.com/findyours-php/viewfinder/images/res70/507000/507142-greece.jpg"
+                        alt="">
                     <h4>Included:Air ticket, Hotel, Breakfast, Tour, Airport Transfer</h4>
                 </div>
                 <div class="cont_bx">
@@ -173,7 +191,8 @@
             <div class="card">
                 <h3>Sydney,Australia</h3>
                 <div class="img_text">
-                    <img src="https://lh5.googleusercontent.com/p/AF1QipMHftgSCBlvyjxYphi4gLqDC_62WWvZvyy1EBuh=w675-h390-n-k-no" alt="">
+                    <img src="https://lh5.googleusercontent.com/p/AF1QipMHftgSCBlvyjxYphi4gLqDC_62WWvZvyy1EBuh=w675-h390-n-k-no"
+                        alt="">
                     <h4>Included:Air ticket, Hotel, Breakfast, Tour, Airport Transfer</h4>
                 </div>
                 <div class="cont_bx">
@@ -193,7 +212,8 @@
             <div class="card">
                 <h3>Kyoto,Japan</h3>
                 <div class="img_text">
-                    <img src="https://content.r9cdn.net/rimg/dimg/83/d4/85f68013-city-20339-16489ec9b8b.jpg?crop=true&width=1020&height=498" alt="">
+                    <img src="https://content.r9cdn.net/rimg/dimg/83/d4/85f68013-city-20339-16489ec9b8b.jpg?crop=true&width=1020&height=498"
+                        alt="">
                     <h4>Included:Air ticket, Hotel, Breakfast, Tour, Airport Transfer</h4>
                 </div>
                 <div class="cont_bx">
@@ -212,63 +232,111 @@
             </div>
         </div>
     </div>
-   <div class="destination">
-    <div class="des_bx">
-        <h4>Our Destinations</h4>
-        <p>Choose Your Next Destination</p>
-        <li>India</li>
-        <li>Dubai</li>
-        <li>Spain</li>
-        <li>France</li>
-        <li>Egypt</li>
-        <li>Greece</li>
-        <li>And way more destinations all over the world</li>
-        <h6>Included: Air ticket, Hotel, Breakfast, Tours, Airport transfer etc.</h6>
-        <button>MORE INFO</button>
-    </div>
-    <div class="img_bx">
-        <img src="https://images.unsplash.com/photo-1560462931-04c235409a53?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGF4fGVufDB8fDB8fHww" alt="">
-        <div class="msg">
-            <img src="https://images.pexels.com/photos/4386429/pexels-photo-4386429.jpeg?cs=srgb&dl=pexels-karolina-grabowska-4386429.jpg&fm=jpg" alt="">
-            <div class="cont">
-            <h4>USA</h4>
-            <div class="icon">
-                <i class="bi bi-heart-fill"><span>115570</span></i>
-                <i class="bi bi-chat-fill"><span>16458</span></i>
-            </div>
+    <div class="destination">
+        <div class="des_bx">
+            <h4>Our Destinations</h4>
+            <p>Choose Your Next Destination</p>
+            <li>India</li>
+            <li>Dubai</li>
+            <li>Spain</li>
+            <li>France</li>
+            <li>Egypt</li>
+            <li>Greece</li>
+            <li>And way more destinations all over the world</li>
+            <h6>Included: Air ticket, Hotel, Breakfast, Tours, Airport transfer etc.</h6>
+            <button>MORE INFO</button>
         </div>
-        </div>
-        <div class="msg">
-            <img src="https://t4.ftcdn.net/jpg/00/62/19/69/360_F_62196992_iw5ES2Plhi3giyorAup7ykAdgXSocbIB.jpg" alt="">
-            <div class="cont">
-            <h4>SPAIN</h4>
-            <div class="icon">
-                <i class="bi bi-heart-fill"><span>115570</span></i>
-                <i class="bi bi-chat-fill"><span>16458</span></i>
-            </div>
-        </div>
-        </div>
-    </div>
-   </div>
 
-   <footer>
-    <h2>Sign Up & <br> get to find a travel companion</h2>
-    <p>Stand out and get a chance to travel with a companion who is relative to your personalities and enjoy your travel experience ten times better than when you travel alone.</p>
-    <div class="input">
-        <input type="text" placeholder="Enter your email address">
-        <input type="text" placeholder="Create your password">
-        <input type="text" placeholder="Describe your personality">
-        <button>Sign Up</button>
+        <div class="img_bx">
+            <img src="https://images.unsplash.com/photo-1560462931-04c235409a53?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGF4fGVufDB8fDB8fHww"
+                alt="">
+            <div class="msg">
+                <img src="https://images.pexels.com/photos/4386429/pexels-photo-4386429.jpeg?cs=srgb&dl=pexels-karolina-grabowska-4386429.jpg&fm=jpg"
+                    alt="">
+                <div class="cont">
+                    <h4>USA</h4>
+                    <div class="icon">
+                        <i class="bi bi-heart-fill"><span>115570</span></i>
+                        <i class="bi bi-chat-fill"><span>16458</span></i>
+                    </div>
+                </div>
+            </div>
+            <div class="msg">
+                <img src="https://t4.ftcdn.net/jpg/00/62/19/69/360_F_62196992_iw5ES2Plhi3giyorAup7ykAdgXSocbIB.jpg"
+                    alt="">
+                <div class="cont">
+                    <h4>SPAIN</h4>
+                    <div class="icon">
+                        <i class="bi bi-heart-fill"><span>115570</span></i>
+                        <i class="bi bi-chat-fill"><span>16458</span></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <ul>
-        <li>15 <br><h6>Years serving the travel industry</h6></li>
-        <li>20 <br><h6> Global <br> Patnership</h6></li>
-        <li>10 <br><h6>Industry Awards Since 2023</h6></li>
-        <li>2926 <br><h6>Sign Up</h6></li>
-    </ul>
-   </footer>
+
+    <footer>
+        <h2>Sign Up & <br> get to find a travel companion</h2>
+        <p>Stand out and get a chance to travel with a companion who is relative to your personalities and enjoy your
+            travel experience ten times better than when you travel alone.</p>
+        <div class="input">
+            <input type="text" placeholder="Enter your email address">
+            <input type="text" placeholder="Create your password">
+            <input type="text" placeholder="Describe your personality">
+            <button>Sign Up</button>
+        </div>
+        <ul>
+            <li>15 <br>
+                <h6>Years serving the travel industry</h6>
+            </li>
+            <li>20 <br>
+                <h6> Global <br> Patnership</h6>
+            </li>
+            <li>10 <br>
+                <h6>Industry Awards Since 2023</h6>
+            </li>
+            <li>2926 <br>
+                <h6>Sign Up</h6>
+            </li>
+        </ul>
+    </footer>
 
     <script src="app.js"></script>
-    
+    <!-- <script src="index.js"></script> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const errorMessage = document.getElementById('error-message');
+            const logoutLink = document.getElementById('logout-link');
+
+            // Check if an error message is present in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                errorMessage.textContent = error;
+            }
+
+            // Optionally, handle a successful logout
+            logoutLink.addEventListener('click', function () {
+                //   event.preventDefault();
+
+                // Make an AJAX request to the logout route
+                fetch('/logout')
+                    .then(response => {
+                        // Check if the request was successful
+                        if (response.ok) {
+                            // Redirect to the login page
+                            window.location.href = '/loginSignUp.html';
+                        } else {
+                            console.error('Logout failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error during logout:', error);
+                    });
+            });
+        });
+    </script>
+
 </body>
+
 </html>
