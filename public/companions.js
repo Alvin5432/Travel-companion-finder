@@ -1,26 +1,30 @@
-// companions.js
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Get parameters from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const interest = urlParams.get('interest');
-    const destination = urlParams.get('destination');
-  
-    // Display the interest and destination (You can modify this as needed)
-    document.getElementById('interest').textContent = `Interest: ${interest}`;
-    document.getElementById('destination').textContent = `Destination: ${destination}`;
-  
-    // Send a request to the server to get companions based on the interest and destination
-    fetch(`http://localhost:5000/searchCompanions?interest=${interest}&destination=${destination}`)
+    // Make a request to the server to get companions
+    fetch('http://localhost:5000/searchCompanions')
       .then(response => response.json())
       .then(data => {
-        console.log('Companions:', data);
-        // Display the companions (You can modify this as needed)
-        const companionsList = document.getElementById('companionsList');
+        // Display the companions
+        const companionsList = document.getElementById('companions-list');
         data.forEach(companion => {
-          const listItem = document.createElement('li');
-          listItem.textContent = companion.email;
+          const listItem = document.createElement('div');
+          listItem.innerHTML = `
+            <p>Email: ${companion.email}</p>
+            <p>Interest: ${companion.interest}</p>
+            <p>Destination: ${companion.chosen_destination}</p>
+            <button class="chat-button" data-email="${companion.email}">Chat</button>
+            <hr>
+          `;
+          
           companionsList.appendChild(listItem);
+        });
+  
+        // Add event listeners for the chat buttons
+        const chatButtons = document.querySelectorAll('.chat-button');
+        chatButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const companionEmail = this.dataset.email;
+            window.location.href = `/chat.html?companion=${companionEmail}`;
+          });
         });
       })
       .catch(error => {

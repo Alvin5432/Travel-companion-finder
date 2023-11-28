@@ -1,3 +1,14 @@
+
+const urlParams = new URLSearchParams(window.location.search);
+    const companionName = urlParams.get('companion');
+
+    // Check if the companionName is not null
+    if (companionName) {
+        // Update the name-input field with the companionName
+        nameInput.value = companionName;
+    }
+
+
 const socket = io();
 
 const clientTotal = document.querySelector('#clients-total');

@@ -20,6 +20,18 @@ let socketsConected = new Set()
 io.on('connection', onConnected)
 
 function onConnected(socket) {
+
+  socket.on('privateMessage', (data) => {
+    const { receiverEmail, message } = data;
+    const senderEmail = req.session.user; // Assuming you have the user's email in the session
+
+    // Store the message in the database
+    storeMessage(senderEmail, receiverEmail, message);
+    
+    // Send the message to the receiver's room
+    io.to(receiverEmail).emit('message', { senderEmail, message });
+  });
+
   console.log('Socket connected', socket.id)
   socketsConected.add(socket.id)
   io.emit('clients-total', socketsConected.size)
@@ -38,6 +50,17 @@ function onConnected(socket) {
   socket.on('feedback', (data) => {
     socket.broadcast.emit('feedback', data)
   })
+  function storeMessage(senderEmail, receiverEmail, message) {
+    var sql = `
+      INSERT INTO messages (sender_email, receiver_email, message)
+      VALUES (?, ?, ?)
+    `;
+    
+    con.query(sql, [senderEmail, receiverEmail, message], function (err, result) {
+      if (err) throw err;
+      console.log("Message stored!");
+    });
+}
 }
 app.use(session({
   secret: 'your secret key',
@@ -158,61 +181,79 @@ app.get('/storeInterest', function (req, res) {
 
 app.get('/saveDestination', function (req, res) {
   const chosenDestination = req.query.destination;
-  const userEmail = req.session.user;
+  const userEmail = req.query.userEmail;
 
   var con = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "",
-      database: "chat-socket"
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
   });
 
   con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+    console.log(userEmail);
+
+    var sql = `
+        UPDATE userdetails
+        SET chosen_destination = ?
+        WHERE email = ?
+    `;
+
+    con.query(sql, [chosenDestination, userEmail], function (err, result) {
       if (err) throw err;
-      console.log("Connected!");
-      console.log(userEmail);
-
-      var sql = `
-          INSERT INTO user_destinations (email, chosen_destination)
-          VALUES (?, ?)
-          ON DUPLICATE KEY UPDATE chosen_destination = VALUES(chosen_destination)
-      `;
-
-      con.query(sql, [userEmail, chosenDestination], function (err, result) {
-          if (err) throw err;
-          res.status(200).send('Destination saved successfully!');
-      });
+      res.status(200).send('Destination saved successfully!');
+    });
   });
 });
+
 
 // Add an API endpoint to find companions with the same interests and chosen destination
 app.get('/searchCompanions', function (req, res) {
   const userEmail = req.session.user;
 
   var con = mysql.createConnection({
-      host: "localhost",
-      user: "root",
-      password: "",
-      database: "chat-socket"
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
   });
 
   con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    // Retrieve users with the same interests and chosen destination
+    var sql = `
+      SELECT email, interest, chosen_destination
+      FROM userdetails
+      WHERE interest = (SELECT interest FROM userdetails WHERE email = ?)
+      AND chosen_destination = (SELECT chosen_destination FROM userdetails WHERE email = ?)
+      AND email != ?
+    `;
+
+    con.query(sql, [userEmail, userEmail, userEmail], function (err, result) {
       if (err) throw err;
-      console.log("Connected!");
-
-      // Retrieve users with the same interests and chosen destination
-      var sql = `
-      SELECT u.email, u.interest, d.chosen_destination
-      FROM userdetails u
-      JOIN user_destinations d ON u.email = d.email
-      WHERE u.interest = (SELECT interest FROM userdetails WHERE email = ?)
-      AND d.chosen_destination = (SELECT chosen_destination FROM user_destinations WHERE email = ?)
-      AND u.email != ?
-      `;
-
-      con.query(sql, [userEmail, userEmail, userEmail], function (err, result) {
-          if (err) throw err;
-          res.send(result);
-      });
+      res.send(result);
+    });
   });
 });
+
+app.get('/getMessages', function (req, res) {
+  const userEmail = req.session.user;
+
+  var sql = `
+    SELECT sender_email, receiver_email, message, sent_at
+    FROM messages
+    WHERE receiver_email = ?
+    ORDER BY sent_at;
+  `;
+
+  con.query(sql, [userEmail], function (err, result) {
+    if (err) throw err;
+    res.send(result);
+  });
+});
+
+
