@@ -8,14 +8,20 @@ const messageInput = document.querySelector('#message-input');
 
 const messageTone = new Audio('./public_message-tone.mp3');
 
-window.onload = function() {
-    // Get the username from the URL
-    let params = new URLSearchParams(window.location.search);
-    let username = params.get('username');
-  
-    // Set the name input value to the username
-    document.getElementById('name-input').value = username;
+function getSenderEmail() {
+    return localStorage.getItem('userEmail'); // Change 'userEmail' to the key you used to store the user's email during login
+}
+
+  function getReceiverEmailFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('receiverEmail');
   }
+
+  window.onload = function () {
+    let receiverEmail = getReceiverEmailFromURL();
+  
+    document.getElementById('name-input').value = getSenderEmail();
+  };
   
 
 
@@ -35,18 +41,28 @@ socket.on('clients-total', (data)=>{
  * @returns 
  */
 
-function sendMessage(){
-    if(messageInput.value === '') return
-    console.log(messageInput.value);
+function sendMessage() {
+    if (messageInput.value === '') return;
+  
+    const senderEmail = getSenderEmail();
+    const receiverEmail = getReceiverEmailFromURL(); 
+    console.log(receiverEmail);
+  
     const data = {
-        name: nameInput.value,
-        message : messageInput.value,
-        dateTime : new Date()
-    }
+      senderEmail: senderEmail,
+      receiverEmail: receiverEmail,
+      message: messageInput.value,
+      dateTime: new Date(),
+    };
+  
+    sendMessageToServer(data);
+    addMessageToUI(true, data);
+    saveMessageToDatabase(data.senderEmail, data.receiverEmail, data.message);
+    messageInput.value = '';
+}
 
+function sendMessageToServer(data) {
     socket.emit('message', data);
-    addMessageToUI(true , data);
-    messageInput.value = ''
 }
 
 socket.on('chat-message', (data) =>{

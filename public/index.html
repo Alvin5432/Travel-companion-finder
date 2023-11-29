@@ -26,6 +26,7 @@
 
             <!-- ... (existing content) ... -->
             <p id="error-message"></p>
+            <button id="see-inbox-link">See Inbox</button>
             <button id="logout-link">logout</button>
 
         </nav>
@@ -307,6 +308,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const errorMessage = document.getElementById('error-message');
             const logoutLink = document.getElementById('logout-link');
+            const seeInboxLink = document.getElementById('see-inbox-link');
 
             // Check if an error message is present in the URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -334,6 +336,9 @@
                         console.error('Error during logout:', error);
                     });
             });
+            seeInboxLink.addEventListener('click', function () {
+      window.location.href = '/inbox.html';
+    });
         });
     </script>
 

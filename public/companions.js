@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
         chatButtons.forEach(button => {
           button.addEventListener('click', function() {
             const companionEmail = this.dataset.email;
-            window.location.href = `/chat.html?companion=${companionEmail}`;
+            window.location.href = `/chat.html?receiverEmail=${companionEmail}`;
           });
         });
       })

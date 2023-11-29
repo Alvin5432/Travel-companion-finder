@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-// const bodyParser = require('body-parser');
 const path = require('path');
 const mysql = require('mysql');
 const PORT = process.env.PORT || 5000
@@ -8,7 +7,6 @@ const app = express();
 const server = app.listen(PORT, () => console.log(`💬 server on port ${PORT}`))
 
 app.use(express.json());
-// app.use(bodyParser.json());
 
 
 const io = require('socket.io')(server)
@@ -33,11 +31,33 @@ function onConnected(socket) {
   socket.on('message', (data) => {
     // console.log(data)
     socket.broadcast.emit('chat-message', data)
+    saveMessageToDatabase(data.senderEmail, data.receiverEmail, data.message);
   })
 
   socket.on('feedback', (data) => {
     socket.broadcast.emit('feedback', data)
   })
+}
+
+function saveMessageToDatabase(senderEmail, receiverEmail, message) {
+  const con = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'chat-socket',
+  });
+
+  const sql = `
+    INSERT INTO messages (sender_email, receiver_email, message)
+    VALUES (?, ?, ?)
+  `;
+
+  con.query(sql, [senderEmail, receiverEmail, message], (err, result) => {
+    if (err) throw err;
+    console.log('Message saved to the database:', result);
+  });
+
+  con.end();
 }
 app.use(session({
   secret: 'your secret key',
@@ -123,6 +143,34 @@ app.get('/insert', function (req, res) {
     });
   });
 });
+
+app.get('/getMessages', function (req, res) {
+  const receiverEmail = req.session.user; // Assuming the user is logged in, and their email is stored in the session
+
+  const con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
+  });
+
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    var sql = `
+      SELECT sender_email, message, sent_at
+      FROM messages
+      WHERE receiver_email = ?
+    `;
+
+    con.query(sql, [receiverEmail], function (err, result) {
+      if (err) throw err;
+      res.send(result);
+    });
+  });
+});
+
 
 
 app.get('/storeInterest', function (req, res) {
