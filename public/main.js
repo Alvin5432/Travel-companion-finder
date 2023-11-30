@@ -55,6 +55,7 @@ function sendMessage() {
       dateTime: new Date(),
     };
   
+
     sendMessageToServer(data);
     addMessageToUI(true, data);
     saveMessageToDatabase(data.senderEmail, data.receiverEmail, data.message);
@@ -76,7 +77,7 @@ function addMessageToUI(isOwnMessage , data){
     const element = `<li class="${isOwnMessage ? 'message-right' : 'message-left'}">
     <p class="message">
         ${data.message}
-        <span>${data.name}:::${moment(data.dateTime).fromNow()}</span>
+        <span>${data.senderEmail}:::${moment(data.dateTime).fromNow()}</span>
     </p>
     </li>`
 
