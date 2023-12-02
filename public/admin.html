@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <style>
-        /* Add your CSS styles here */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,7 +15,6 @@
         #sidebar {
             width: 250px;
             min-width: 80px;
-            /* Set a minimum width for partial collapse */
             height: 100%;
             position: fixed;
             background-color: #333;
@@ -33,7 +31,6 @@
 
         #content.expanded {
             margin-left: 80px;
-            /* Adjust as needed */
         }
 
         button {
@@ -49,10 +46,17 @@
             margin-bottom: 10px;
         }
     </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
 </head>
 
 <body>
-    <!-- Sidebar -->
     <div id="sidebar">
         <button onclick="toggleSidebar()">Toggle Sidebar</button>
         <div id="admin-functions">
@@ -60,14 +64,11 @@
             <button onclick="resetPassword()">Reset User Password</button>
             <button onclick="loadUserList()">Load User List</button>
             <button onclick="toggleDestinationStats()">Toggle Destination Stats</button>
-            <!-- Add more admin functions as needed -->
         </div>
     </div>
 
-    <!-- Content -->
     <div id="content">
         <h1>Welcome to the Admin Panel</h1>
-        <!-- Content goes here -->
         <div id="destination-stats">
             <h2>Destination Statistics</h2>
             <div id="most-visited">
@@ -79,12 +80,41 @@
                 <p id="least-visited-destination"></p>
             </div>
         </div>
+
+        <select id="formatSelector">
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+            <option value="pdf">PDF</option>
+        </select>
+        <button onclick="downloadUserData()">Download User Data</button>
+
         <ul id="user-list"></ul>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- View User Details Modal -->
+    <div class="modal" id="userDetailsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">User Details</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body" id="userDetailsContent">
+                    <!-- User details will be displayed here -->
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Add your client-side JavaScript code here
         let sidebarCollapsed = false;
         let destinationStatsVisible = false;
 
@@ -96,40 +126,36 @@
                 sidebar.css("width", "250px");
                 content.removeClass("expanded");
             } else {
-                sidebar.css("width", "80px"); // Adjust as needed
+                sidebar.css("width", "80px");
                 content.addClass("expanded");
             }
 
             sidebarCollapsed = !sidebarCollapsed;
 
-            // Hide destination stats when toggling sidebar
             if (destinationStatsVisible) {
                 toggleDestinationStats();
             }
         }
 
         function loadUserList() {
-            // Clear existing user list
             $("#user-list").empty();
 
-            // Fetch user list from the server
             $.ajax({
                 type: "GET",
                 url: "/admin/users",
                 success: function (users) {
-                    // Display the user list
                     users.forEach((user) => {
                         $("#user-list").append(`
           <li class="user-item">
             <strong>ID:</strong> ${user.id} |
             <strong>Email:</strong> ${user.email} |
             <strong>Interests:</strong> ${user.interest} |
+            <button onclick="viewUserDetails(${user.id})">View Details</button>
             <button onclick="removeUser(${user.id})">Remove</button>
           </li>
         `);
                     });
 
-                    // Hide destination stats when loading user list
                     if (destinationStatsVisible) {
                         toggleDestinationStats();
                     }
@@ -153,13 +179,11 @@
         }
 
         function removeUser(userId) {
-            // Send a request to the server to remove the user
             $.ajax({
                 type: "GET",
                 url: `/admin/remove-user/${userId}`,
                 success: function (response) {
                     alert(response.message);
-                    // Reload the user list after removing a user
                     loadUserList();
                 },
                 error: function (error) {
@@ -182,8 +206,101 @@
             });
         }
 
-        // Call this function to load destination statistics when the page loads
         loadDestinationStats();
+
+        function viewUserDetails(userId) {
+            $.ajax({
+                type: "GET",
+                url: `/admin/user-details/${userId}`,
+                success: function (userDetails) {
+                    const modalBody = $("#userDetailsContent");
+                    modalBody.empty();
+
+                    // Append user details to modal body
+                    modalBody.append(`<p><strong>ID:</strong> ${userDetails.id}</p>`);
+                    modalBody.append(`<p><strong>Email:</strong> ${userDetails.email}</p>`);
+                    modalBody.append(`<p><strong>Interests:</strong> ${userDetails.interest}</p>`);
+                    modalBody.append(`<p><strong>Last Destination:</strong> ${userDetails.chosen_destination}</p>`);
+
+                    // Open the modal
+                    $("#userDetailsModal").modal("show");
+                },
+                error: function (error) {
+                    alert("Error fetching user details");
+                },
+            });
+        }
+
+        function downloadJSON(data) {
+            const jsonData = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "user_data.json";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadCSV(data) {
+            const csvContent = Papa.unparse(data, {
+                header: true,
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "user_data.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadPDF(data) {
+            const content = data.map(user => `ID: ${user.id} | Email: ${user.email} | Interests: ${user.interest}| Last Destination : ${user.chosen_destination}`).join('<br>');
+
+            const element = document.createElement('div');
+            element.innerHTML = content;
+
+            html2pdf(element, {
+                margin: 10,
+                filename: 'user_data.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            });
+        }
+
+        function downloadUserData() {
+            const selectedFormat = $("#formatSelector").val();
+
+            $.ajax({
+                type: "GET",
+                url: "/admin/download-users",
+                success: function (data) {
+                    switch (selectedFormat) {
+                        case "json":
+                            downloadJSON(data);
+                            break;
+                        case "csv":
+                            downloadCSV(data);
+                            break;
+                        case "pdf":
+                            downloadPDF(data);
+                            break;
+                        default:
+                            alert("Invalid format selected");
+                    }
+                },
+                error: function (error) {
+                    alert("Error downloading user data");
+                },
+            });
+        }
     </script>
 </body>
 

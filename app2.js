@@ -276,7 +276,7 @@ app.get('/logout', (req, res) => {
   });
 });
 
-//admin functions
+//admin functions Endpoints
 const con = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -349,6 +349,41 @@ app.get('/admin/destination-stats', (req, res) => {
       }
   });
 });
+
+app.get('/admin/download-users', (req, res) => {
+  const query = 'SELECT id, email, interest , chosen_destination FROM userdetails';
+
+  con.query(query, (error, results) => {
+      if (error) {
+          console.error('Error executing MySQL query:', error);
+          res.status(500).json({ error: 'Internal Server Error' });
+      } else {
+          res.status(200).json(results);
+      }
+  });
+});
+
+app.get('/admin/user-details/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  const detailsQuery = 'SELECT id, email, interest, chosen_destination FROM userdetails WHERE id = ?';
+  con.query(detailsQuery, [userId], (error, results) => {
+    if (error) {
+      console.error('Error executing MySQL query:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      if (results.length > 0) {
+        // Assuming the user is found
+        const userDetails = results[0];
+        res.status(200).json(userDetails);
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    }
+  });
+});
+
+
 
 
 

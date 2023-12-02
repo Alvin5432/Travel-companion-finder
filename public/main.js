@@ -9,7 +9,7 @@ const messageInput = document.querySelector('#message-input');
 const messageTone = new Audio('./public_message-tone.mp3');
 
 function getSenderEmail() {
-    return localStorage.getItem('userEmail'); // Change 'userEmail' to the key you used to store the user's email during login
+    return localStorage.getItem('userEmail'); 
 }
 
   function getReceiverEmailFromURL() {
