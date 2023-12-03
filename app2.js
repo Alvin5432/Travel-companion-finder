@@ -7,58 +7,6 @@ const app = express();
 const server = app.listen(PORT, () => console.log(`💬 server on port ${PORT}`))
 
 app.use(express.json());
-
-
-const io = require('socket.io')(server)
-
-app.use(express.static(path.join(__dirname, 'public')))
-
-let socketsConected = new Set()
-
-io.on('connection', onConnected)
-
-function onConnected(socket) {
-  console.log('Socket connected', socket.id)
-  socketsConected.add(socket.id)
-  io.emit('clients-total', socketsConected.size)
-
-  socket.on('disconnect', () => {
-    console.log('Socket disconnected', socket.id)
-    socketsConected.delete(socket.id)
-    io.emit('clients-total', socketsConected.size)
-  })
-
-  socket.on('message', (data) => {
-    // console.log(data)
-    socket.broadcast.emit('chat-message', data)
-    saveMessageToDatabase(data.senderEmail, data.receiverEmail, data.message);
-  })
-
-  socket.on('feedback', (data) => {
-    socket.broadcast.emit('feedback', data)
-  })
-}
-
-function saveMessageToDatabase(senderEmail, receiverEmail, message) {
-  const con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'chat-socket',
-  });
-
-  const sql = `
-    INSERT INTO messages (sender_email, receiver_email, message)
-    VALUES (?, ?, ?)
-  `;
-
-  con.query(sql, [senderEmail, receiverEmail, message], (err, result) => {
-    if (err) throw err;
-    console.log('Message saved to the database:', result);
-  });
-
-  con.end();
-}
 app.use(session({
   secret: 'your secret key',
   resave: true,
@@ -68,6 +16,20 @@ app.use(session({
 
 
 
+app.use(express.static(path.join(__dirname, 'public')))
+
+
+
+
+  
+
+
+// ... (existing code)
+
+
+
+
+// user APIs Endpoint 
 app.get('/login', function (req, res) {
   var con = mysql.createConnection({
     host: "localhost",
@@ -264,6 +226,81 @@ app.get('/searchCompanions', function (req, res) {
   });
 });
 
+// Add a new endpoint to fetch user profile information
+// ...
+
+app.get('/getUserProfile', function (req, res) {
+  const userEmail = req.session.user;
+
+  const con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
+  });
+
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    var sql = `
+      SELECT email, interest, chosen_destination
+      FROM userdetails
+      WHERE email = ?
+    `;
+
+    con.query(sql, [userEmail], function (err, result) {
+      if (err) throw err;
+
+      if (result.length > 0) {
+        const userProfile = result[0];
+        res.status(200).json(userProfile);
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    });
+  });
+});
+
+app.get('/updateUserProfile', function (req, res) {
+  const userEmail = req.session.user;
+  const interest = req.query.interest;
+  const chosen_destination = req.query.chosen_destination;
+
+  var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "chat-socket"
+  });
+
+  con.connect(function (err) {
+    if (err) throw err;
+    console.log("Connected!");
+
+    var updateSql = `
+      UPDATE userdetails
+      SET interest = ?, chosen_destination = ?
+      WHERE email = ?
+    `;
+
+    con.query(updateSql, [interest, chosen_destination, userEmail], function (err, result) {
+      if (err) throw err;
+
+      if (result.affectedRows > 0) {
+        res.status(200).send('User profile updated successfully!');
+      } else {
+        res.status(404).json({ error: 'User not found' });
+      }
+    });
+  });
+});
+
+// ...
+
+
+
+
 app.get('/logout', (req, res) => {
   // Destroy the session and redirect to the login page
   req.session.destroy(err => {
@@ -383,6 +420,54 @@ app.get('/admin/user-details/:userId', (req, res) => {
   });
 });
 
+
+const io = require('socket.io')(server)
+let socketsConected = new Set()
+
+io.on('connection', onConnected)
+
+function onConnected(socket) {
+console.log('Socket connected', socket.id)
+socketsConected.add(socket.id)
+io.emit('clients-total', socketsConected.size)
+
+socket.on('disconnect', () => {
+  console.log('Socket disconnected', socket.id)
+  socketsConected.delete(socket.id)
+  io.emit('clients-total', socketsConected.size)
+})
+
+socket.on('message', (data) => {
+  
+  socket.broadcast.emit('chat-message', data)
+  saveMessageToDatabase(data.senderEmail, data.receiverEmail, data.message);
+})
+
+socket.on('feedback', (data) => {
+  socket.broadcast.emit('feedback', data)
+})
+}
+
+function saveMessageToDatabase(senderEmail, receiverEmail, message) {
+const con = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'chat-socket',
+});
+
+const sql = `
+  INSERT INTO messages (sender_email, receiver_email, message)
+  VALUES (?, ?, ?)
+`;
+
+con.query(sql, [senderEmail, receiverEmail, message], (err, result) => {
+  if (err) throw err;
+  console.log('Message saved to the database:', result);
+});
+
+con.end();
+}
 
 
 
